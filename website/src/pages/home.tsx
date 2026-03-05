@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { Terminal, Gamepad2, Grid, Play, Pause, RotateCcw, Code } from "lucide-react";
 import createModule, { type Chip8, type Chip8Module } from "@/lib/chip8_wasm.js";
 
 // Standard Chip-8 Hex keyboard mapped to the left side of a QWERTY keyboard
@@ -220,12 +221,12 @@ export default function Home() {
     }
 
     return (
-        <div className="relative flex h-screen w-full flex-col overflow-x-hidden bg-background-dark font-display text-background-light">
+        <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-background-dark font-display text-background-light">
             {/* Top Navigation */}
             <header className="flex items-center justify-between border-b border-primary/20 px-6 py-4 bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
                 <div className="flex items-center gap-4">
                     <div className="text-primary">
-                        <span className="material-symbols-outlined text-4xl">terminal</span>
+                        <Terminal size={32} className="text-primary" />
                     </div>
                     <div>
                         <h2 className="text-primary text-xl font-bold leading-tight tracking-tighter uppercase">NeonCore_v2.0</h2>
@@ -245,9 +246,9 @@ export default function Home() {
                 </div>
             </header>
 
-            <main className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <main className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden">
                 {/* Left Panel: Sidebar Nav & ROMs */}
-                <div className="lg:col-span-3 flex flex-col gap-6">
+                <div className="lg:col-span-3 flex flex-col gap-6 overflow-hidden">
                     <div className="border border-primary/20 bg-background-dark p-4 rounded shadow-lg">
                         <div className="flex items-center gap-3 mb-4">
                             <div className={`size-3 rounded-full shadow-[0_0_10px_#FA8112] ${isRunning ? "bg-primary animate-pulse" : "bg-background-surface"}`}></div>
@@ -280,7 +281,7 @@ export default function Home() {
                                         activeRom === rom ? "bg-primary text-background-dark border-primary" : "hover:bg-primary/10 text-primary/80 border-transparent hover:border-primary/30"
                                     }`}
                                 >
-                                    <span className="material-symbols-outlined text-sm">videogame_asset</span>
+                                    <Gamepad2 size={16} className="flex-shrink-0" />
                                     <span>{rom}.CH8</span>
                                 </button>
                             ))}
@@ -298,7 +299,7 @@ export default function Home() {
                                     <div style={scanlineStyle} className="absolute inset-0 z-10 opacity-40"></div>
                                     {!isRunning && !activeRom && (
                                         <div className="text-primary opacity-20 absolute inset-0 flex items-center justify-center select-none pointer-events-none">
-                                            <span className="material-symbols-outlined text-[120px]">grid_view</span>
+                                            <Grid size={120} className="text-primary" />
                                         </div>
                                     )}
                                     <canvas ref={canvasRef} width={640} height={320} className="w-full h-full object-contain relative z-0 opacity-90" />
@@ -315,21 +316,21 @@ export default function Home() {
                                 disabled={!activeRom || isRunning}
                                 className="flex items-center gap-2 px-4 py-2 bg-primary text-background-dark rounded font-bold uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/80 transition-colors"
                             >
-                                <span className="material-symbols-outlined text-sm">play_arrow</span> Run
+                                <Play size={16} /> Run
                             </button>
                             <button
                                 onClick={() => setIsRunning(false)}
                                 disabled={!isRunning}
                                 className="flex items-center gap-2 px-4 py-2 border border-primary/40 text-primary rounded font-bold uppercase text-xs hover:bg-primary/10 disabled:opacity-50 transition-colors"
                             >
-                                <span className="material-symbols-outlined text-sm">pause</span> Pause
+                                <Pause size={16} /> Pause
                             </button>
                             <button
                                 onClick={() => activeRom && loadRom(activeRom)}
                                 disabled={!activeRom}
                                 className="flex items-center gap-2 px-4 py-2 border border-primary/40 text-primary rounded font-bold uppercase text-xs hover:bg-primary/10 disabled:opacity-50 transition-colors"
                             >
-                                <span className="material-symbols-outlined text-sm">refresh</span> Reset
+                                <RotateCcw size={16} /> Reset
                             </button>
                         </div>
                         <div className="flex items-center gap-4 w-10/12 md:w-fit">
@@ -366,7 +367,7 @@ export default function Home() {
                     {/* Debug Console */}
                     <div className="flex-1 border border-primary/20 bg-background-dark rounded flex flex-col min-h-[200px] shadow-lg">
                         <div className="p-2 border-b border-primary/20 bg-primary/5 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-xs text-primary">data_object</span>
+                            <Code size={12} className="text-primary" />
                             <h3 className="text-[10px] font-bold uppercase tracking-widest text-primary">Kernel Output</h3>
                         </div>
                         <div className="p-3 font-mono text-[10px] text-primary/70 space-y-1 overflow-y-auto h-[200px]">
