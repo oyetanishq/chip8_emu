@@ -1,9 +1,27 @@
 @import "tailwindcss";
 
+@theme {
+    /* New Color Theme */
+    --color-primary: #fa8112; /* Orange */
+    --color-background-light: #faf3e1; /* Light Cream */
+    --color-background-surface: #f5e7c6; /* Darker Cream */
+    --color-background-dark: #222222; /* Dark Gray/Black */
+
+    /* Fonts */
+    --font-display: "Space Grotesk", sans-serif;
+}
+
 html,
 body {
     margin: 0;
     padding: 0;
 
     letter-spacing: -0.025em;
+}
+
+/* Base styles to ensure dark mode formatting works naturally */
+@layer base {
+    body {
+        @apply bg-background-dark text-background-light font-display antialiased;
+    }
 }
