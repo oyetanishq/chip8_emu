@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 
 const uint16_t ROM_START = 0x200;
 
@@ -113,6 +114,20 @@ bool Emulator::Chip8::load_rom(const std::string& file_path) {
     std::cout << "Loaded Succesfully into ROM: " << file_path << std::endl;
 
     rom_file.close();
+    return true;
+}
+
+bool Emulator::Chip8::load_rom_from_buffer(const std::vector<uint8_t>& buffer) {
+    this->init();
+
+    std::cout << "Loading ROM from buffer" << std::endl;
+
+    if (buffer.size() > (4096 - ROM_START)) {
+        std::cerr << "Error: ROM file is too large to fit in CHIP-8 memory!\n";
+        return false;
+    }
+    
+    std::copy(buffer.begin(), buffer.end(), &this->memory[ROM_START]);
     return true;
 }
 

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <vector>
 
 namespace Emulator {
     class Chip8 {
@@ -56,5 +57,6 @@ namespace Emulator {
 
             void emulate_cycle();               // Emulate one cycle
             bool load_rom(const std::string& file_path);   // Load application
+            bool load_rom_from_buffer(const std::vector<uint8_t>& buffer);   // Load application
     };
 }
