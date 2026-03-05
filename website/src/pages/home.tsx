@@ -62,14 +62,23 @@ export default function Home() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const requestRef = useRef<number>(0);
     const logsEndRef = useRef<HTMLDivElement>(null);
+    const logsContainerRef = useRef<HTMLDivElement>(null);
+    const isInitialMount = useRef(true);
 
     const addLog = (msg: string) => {
         setLogs((prev) => [...prev, `[${(performance.now() / 1000).toFixed(3)}] ${msg}`]);
     };
 
-    // Auto-scroll logs
+    // Auto-scroll logs (but not on initial mount)
     useEffect(() => {
-        logsEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+        // Scroll within the logs container only, not the page
+        if (logsContainerRef.current) {
+            logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
+        }
     }, [logs]);
 
     // Initialize the WASM module
@@ -221,7 +230,7 @@ export default function Home() {
     }
 
     return (
-        <div className="relative flex h-dvh w-full flex-col overflow-hidden bg-background-dark font-display text-background-light">
+        <div className="relative flex h-dvh w-full flex-col overflow-scroll bg-background-dark font-display text-background-light">
             {/* Top Navigation */}
             <header className="flex items-center justify-between border-b border-primary/20 px-6 py-4 bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
                 <div className="flex items-center gap-4">
@@ -246,9 +255,9 @@ export default function Home() {
                 </div>
             </header>
 
-            <main className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden">
+            <main className="flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-y-auto lg:overflow-hidden">
                 {/* Left Panel: Sidebar Nav & ROMs */}
-                <div className="lg:col-span-3 flex flex-col gap-6 overflow-hidden">
+                <div className="lg:col-span-3 flex flex-col gap-6 overflow-y-scroll lg:overflow-hidden min-h-72">
                     <div className="border border-primary/20 bg-background-dark p-4 rounded shadow-lg">
                         <div className="flex items-center gap-3 mb-4">
                             <div className={`size-3 rounded-full shadow-[0_0_10px_#FA8112] ${isRunning ? "bg-primary animate-pulse" : "bg-background-surface"}`}></div>
@@ -335,7 +344,7 @@ export default function Home() {
                         </div>
                         <div className="flex items-center gap-4 w-10/12 md:w-fit">
                             <span className="text-xs font-mono text-primary/70">Speed: {speed * 60}Hz</span>
-                            <input className="w-full md:w-24 accent-primary cursor-pointer" type="range" min="1" max="30" value={speed} onChange={(e) => setSpeed(Number(e.target.value))} />
+                            <input className="w-full md:w-24" type="range" min="1" max="30" value={speed} onChange={(e) => setSpeed(Number(e.target.value))} />
                         </div>
                     </div>
                 </div>
@@ -370,7 +379,7 @@ export default function Home() {
                             <Code size={12} className="text-primary" />
                             <h3 className="text-[10px] font-bold uppercase tracking-widest text-primary">Kernel Output</h3>
                         </div>
-                        <div className="p-3 font-mono text-[10px] text-primary/70 space-y-1 overflow-y-auto h-[200px]">
+                        <div ref={logsContainerRef} className="p-3 font-mono text-[10px] text-primary/70 space-y-1 overflow-y-auto h-[200px]">
                             {logs.map((log, i) => (
                                 <p key={i} className="text-primary/60">
                                     {log}
