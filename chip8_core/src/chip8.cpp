@@ -27,7 +27,33 @@ const uint8_t chip8_fontset[80] = {
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-Emulator::Chip8::Chip8() {}
+void Emulator::Chip8::setup_tables() {
+    // Fill the table with a fallback first to prevent crash on bad opcodes
+    for (int i = 0; i < 16; i++)
+        main_table[i] = &Chip8::OP_NULL;
+
+    // Map the first nibble (0x0 to 0xF) to the correct function
+    main_table[0x0] = &Chip8::OP_00E_;
+    main_table[0x1] = &Chip8::OP_1nnn;
+    main_table[0x2] = &Chip8::OP_2nnn;
+    main_table[0x3] = &Chip8::OP_3xnn;
+    main_table[0x4] = &Chip8::OP_4xnn;
+    main_table[0x5] = &Chip8::OP_5xy0;
+    main_table[0x6] = &Chip8::OP_6xnn;
+    main_table[0x7] = &Chip8::OP_7xnn;
+    main_table[0x8] = &Chip8::OP_8xy_;
+    main_table[0x9] = &Chip8::OP_9xy0;
+    main_table[0xA] = &Chip8::OP_Annn;
+    main_table[0xB] = &Chip8::OP_Bnnn;
+    main_table[0xC] = &Chip8::OP_Cxnn;
+    main_table[0xD] = &Chip8::OP_Dxyn;
+    main_table[0xE] = &Chip8::OP_Ex__;
+    main_table[0xF] = &Chip8::OP_Fx__;
+}
+
+Emulator::Chip8::Chip8() {
+    setup_tables();
+}
 Emulator::Chip8::~Chip8() {}
 
 void Emulator::Chip8::init() {
@@ -84,6 +110,42 @@ bool Emulator::Chip8::load_rom(const std::string& file_path) {
     rom_file.seekg(0, std::ios::beg);
     rom_file.read((char*)(&memory[ROM_START]), size);
 
+    std::cout << "Loaded Succesfully into ROM: " << file_path << std::endl;
+
     rom_file.close();
     return true;
+}
+
+void Emulator::Chip8::emulate_cycle() {
+    // opcode is of 2 byte, but memory stores 2 byte per pc,
+    // so left shift 8 for pc, and overlap with pc+1
+    // 
+    // example: 
+    // memory[pc+0] == 0xA2 << 8  -> (10100010 00000000)
+    // memory[pc+1] == 0xF0       -> (         11110000)
+    // opcode       == 0xA2F0     -> (10100010 11110000)
+    //
+    uint16_t higher_byte = this->memory[this->pc + 0];
+    uint16_t lower_byte  = this->memory[this->pc + 1];
+    this->opcode = (higher_byte << 8) | lower_byte;
+
+    // increment "program counter" before execution
+    this->pc += 2;
+
+    // extract the first nibble: 0xABCD -> 0xA,
+    // and execute the pc opcode from the array of functions
+    uint8_t first_nibble = (this->opcode & 0xF000) >> 12;
+    (this->*main_table[first_nibble])();
+
+    // update timers: delay, and sound
+    if (this->delay_timer < 0)
+        --(this->delay_timer);
+    
+    if (this->sound_timer > 0) {
+        if(this->sound_timer == 1) {
+            // TODO: BEEP
+        }
+        
+        --(this->sound_timer);
+    }
 }

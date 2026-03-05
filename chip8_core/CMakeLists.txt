@@ -15,3 +15,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_executable(${PROJECT_NAME} src/main.cpp)
 
 include_directories(include)
+
+add_library(chip8 src/chip8.cpp src/instructions.cpp)
+target_link_libraries(${PROJECT_NAME} PRIVATE chip8)
+
