@@ -1,3 +1,4 @@
 chip8.pdf
 build/
 .DS_Store
+.vscode
