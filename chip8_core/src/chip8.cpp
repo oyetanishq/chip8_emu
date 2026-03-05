@@ -1,5 +1,8 @@
 #include <chip8.hpp>
 #include <cstdint>
+#include <iostream>
+#include <cstring>
+#include <fstream>
 
 const uint16_t ROM_START = 0x200;
 
@@ -21,3 +24,6 @@ const uint8_t chip8_fontset[80] = {
     0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
     0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
+
+Emulator::Chip8::Chip8() {}
+Emulator::Chip8::~Chip8() {}
