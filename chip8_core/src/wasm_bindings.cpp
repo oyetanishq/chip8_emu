@@ -1,5 +1,6 @@
 #include <chip8.hpp>
 #include <emscripten/bind.h>
+#include <emscripten/val.h>
 
 using namespace emscripten;
 
@@ -13,11 +14,12 @@ EMSCRIPTEN_BINDINGS(chip8_module) {
         .function("load_rom_from_buffer", &Emulator::Chip8::load_rom_from_buffer)
         .property("drawFlag", &Emulator::Chip8::drawFlag)
         
-        // Expose pointers to the arrays so JS can read/write directly to the WASM memory heap
-        .function("getGfxPtr", optional_override([](Emulator::Chip8& self) {
-            return reinterpret_cast<uintptr_t>(self.gfx);
+        // Return a direct Uint8Array view of the graphics memory (64 * 32 = 2048 pixels)
+        .function("getGfx", optional_override([](Emulator::Chip8& self) {
+            return val(typed_memory_view(2048, self.gfx));
         }))
-        .function("getKeyPtr", optional_override([](Emulator::Chip8& self) {
-            return reinterpret_cast<uintptr_t>(self.key);
+        // Return a direct Uint8Array view of the 16 keys
+        .function("getKeys", optional_override([](Emulator::Chip8& self) {
+            return val(typed_memory_view(16, self.key));
         }));
 }
