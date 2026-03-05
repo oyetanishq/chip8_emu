@@ -76,16 +76,16 @@ signed main(int argc, char **argv) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) exit(0);
-
+            
             // Process keydown events
             if (e.type == SDL_KEYDOWN) {
                 if (e.key.keysym.sym == SDLK_ESCAPE)
-                    exit(0);
-
+                exit(0);
+                
                 if (e.key.keysym.sym == SDLK_F1)
-                    goto load_rom_file;      // *gasp*, a goto statement!
-                                             // Used to reset/reload ROM
-
+                goto load_rom_file;      // *gasp*, a goto statement!
+                // Used to reset/reload ROM
+                
                 for (int i = 0; i < 16; ++i) {
                     if (e.key.keysym.sym == keymap[i]) {
                         chip8.key[i] = 1;

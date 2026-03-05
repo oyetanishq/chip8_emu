@@ -138,7 +138,7 @@ void Emulator::Chip8::emulate_cycle() {
     (this->*main_table[first_nibble])();
 
     // update timers: delay, and sound
-    if (this->delay_timer < 0)
+    if (this->delay_timer > 0)
         --(this->delay_timer);
     
     if (this->sound_timer > 0) {

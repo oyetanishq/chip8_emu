@@ -192,7 +192,7 @@ void Emulator::Chip8::OP_Bnnn() {
 
 // Cxnn: Set Vx = random byte AND nn
 void Emulator::Chip8::OP_Cxnn() {
-    uint16_t Vx = this->opcode & 0x0F00;
+    uint8_t Vx = (this->opcode & 0x0F00) >> 8;
     this->v_reg[Vx] = (rand() % (0xFF + 1)) & (opcode & 0x00FF);
 }
 
