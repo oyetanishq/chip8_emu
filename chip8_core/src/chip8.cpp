@@ -39,15 +39,47 @@ void Emulator::Chip8::init() {
     memset(this->key, 0, sizeof(this->key));
 
     // clear: stack, memory, and v_registors
-    memset(this->stack, 0, sizeof(this->stack)); // clear the display
+    memset(this->stack, 0, sizeof(this->stack));   // clear the display
     memset(this->memory, 0, sizeof(this->memory)); // clear the display
-    memset(this->v_reg, 0, sizeof(this->v_reg)); // clear the display
+    memset(this->v_reg, 0, sizeof(this->v_reg));   // clear the display
 
     // load chip8's fontset in memory
     for (int i=0; i<80; i++)
         this->memory[i] = chip8_fontset[i];
 
     // reset timers
-    delay_timer = 0;
-    sound_timer = 0;
+    this->delay_timer = 0;
+    this->sound_timer = 0;
+}
+
+bool Emulator::Chip8::load_rom(const std::string& file_path) {
+    this->init();
+
+    std::cout << "Loading ROM: " << file_path << std::endl;
+
+    // open the file as a binary stream.
+    std::ifstream rom_file(file_path, std::ios::binary);
+
+    if (!rom_file.is_open()) {
+        std::cerr << "Error: Could not open ROM file: " << file_path << "\n";
+        return false;
+    }
+
+    // move the cursor at the end of the file,
+    // then tellg() gives us the exact byte size.
+    rom_file.seekg(0, std::ios::end);
+    std::streampos size = rom_file.tellg();
+
+    // CHIP-8 has 4096 bytes total, but the first 512 (0x200) are reserved.
+    if (size > (4096 - ROM_START)) {
+        std::cerr << "Error: ROM file is too large to fit in CHIP-8 memory!\n";
+        return false;
+    }
+
+    // move the cursor at the start, to copy the ROM in the Memory.
+    rom_file.seekg(0, std::ios::beg);
+    rom_file.read((char*)(&memory[ROM_START]), size);
+
+    rom_file.close();
+    return true;
 }
