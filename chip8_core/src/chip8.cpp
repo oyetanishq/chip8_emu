@@ -27,3 +27,27 @@ const uint8_t chip8_fontset[80] = {
 
 Emulator::Chip8::Chip8() {}
 Emulator::Chip8::~Chip8() {}
+
+void Emulator::Chip8::init() {
+    this->pc      = ROM_START;   // set program counter to ROM_START
+    this->opcode  = 0;           // reset op code
+    this->i_reg   = 0;           // reset i_reg
+    this->sp      = 0;           // reset stack pointer
+
+    // clear: display, and key
+    memset(this->gfx, 0, sizeof(this->gfx));
+    memset(this->key, 0, sizeof(this->key));
+
+    // clear: stack, memory, and v_registors
+    memset(this->stack, 0, sizeof(this->stack)); // clear the display
+    memset(this->memory, 0, sizeof(this->memory)); // clear the display
+    memset(this->v_reg, 0, sizeof(this->v_reg)); // clear the display
+
+    // load chip8's fontset in memory
+    for (int i=0; i<80; i++)
+        this->memory[i] = chip8_fontset[i];
+
+    // reset timers
+    delay_timer = 0;
+    sound_timer = 0;
+}
