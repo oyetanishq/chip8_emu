@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cstring>
 #include <fstream>
+#include <cstdlib>
+#include <ctime>
 
 const uint16_t ROM_START = 0x200;
 
@@ -50,6 +52,8 @@ void Emulator::Chip8::init() {
     // reset timers
     this->delay_timer = 0;
     this->sound_timer = 0;
+
+    srand(time(NULL));
 }
 
 bool Emulator::Chip8::load_rom(const std::string& file_path) {
